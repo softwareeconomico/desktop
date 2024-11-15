@@ -1,6 +1,4 @@
 # SecondaryView.py
-import os
-
 import customtkinter as ctk
 from PIL import Image
 
@@ -11,17 +9,18 @@ ctk.set_default_color_theme("dark-blue")
 class SecondaryView(ctk.CTkToplevel):
     """Secondary window view that will be opened from the main window."""
 
-    def __init__(self, parent):
-        super().__init__(parent)  # Pass parent to make this window a child of the main window
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
         self.title("Secondary Window")
 
-        # Set window size for the secondary window, increase the size for better visibility
-        self.geometry("500x400")
+        # Set window size for the secondary window, adjusted to 600x500
+        self.geometry("600x500")
 
         # Load and display logo image for the secondary window
         self.logo_image = ctk.CTkImage(Image.open("assets/dashboard.png"), size=(100, 100))  # Adjust the size as needed
         self.logo_label = ctk.CTkLabel(self, image=self.logo_image, text="")
-        self.logo_label.grid(row=0, column=0, columnspan=3, pady=20, sticky="nsew")
+        self.logo_label.grid(row=0, column=0, columnspan=3, pady=20, sticky="nsew")  # Use grid for logo_label
 
         # Create a label and entry field for this secondary window
         self.label = ctk.CTkLabel(self, text="Enter some more text:")
@@ -47,6 +46,10 @@ class SecondaryView(ctk.CTkToplevel):
         self.close_button = ctk.CTkButton(self, text="Close", image=close_icon, compound="left", command=self.close_window)
         self.close_button.grid(row=5, column=0, columnspan=3, padx=20, pady=10, sticky="ew")
 
+        # Add a label to show messages (this will be updated by update_display)
+        self.status_label = ctk.CTkLabel(self, text="")
+        self.status_label.grid(row=6, column=0, columnspan=3, pady=20)  # Now placed after the buttons
+
         # Configure rows and columns to be expandable
         self.grid_rowconfigure(0, weight=1)  # Logo row
         self.grid_rowconfigure(1, weight=0)  # Label row
@@ -54,6 +57,7 @@ class SecondaryView(ctk.CTkToplevel):
         self.grid_rowconfigure(3, weight=0)  # Save button row
         self.grid_rowconfigure(4, weight=0)  # Clear button row
         self.grid_rowconfigure(5, weight=0)  # Close button row
+        self.grid_rowconfigure(6, weight=1)  # Status label row, expandable if needed
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=3)
@@ -73,16 +77,21 @@ class SecondaryView(ctk.CTkToplevel):
         parent_y = parent.winfo_y()
 
         # Calculate the position to center the window
-        position_top = int(parent_y + (parent_height / 2) - 200)  # Adjust the 200 based on window height
-        position_right = int(parent_x + (parent_width / 2) - 250)  # Adjust the 250 based on window width
+        position_top = int(parent_y + (parent_height / 2) - 250)  # Adjusted for new window height
+        position_right = int(parent_x + (parent_width / 2) - 300)  # Adjusted for new window width
 
-        self.geometry(f"500x400+{position_right}+{position_top}")  # Position the window with the calculated coordinates
+        self.geometry(f"600x500+{position_right}+{position_top}")  # Position the window with the calculated coordinates
+
+    def update_display(self, message):
+        """Update the display (e.g., status label) with the message."""
+        if self.status_label:
+            self.status_label.configure(text=message)  # Update the text of the label with the provided message
 
     def update_logo(self):
         """Adjust the logo size based on window size."""
         window_width = self.winfo_width()
         logo_size = int(window_width * 0.20)  # 20% of the window width
-        self.logo_image = ctk.CTkImage(Image.open("assets/logo.png"), size=(logo_size, logo_size))
+        self.logo_image = ctk.CTkImage(Image.open("assets/dashboard.png"), size=(logo_size, logo_size))
         self.logo_label.configure(image=self.logo_image)
         self.after(100, self.update_logo)  # Update the logo size every 100ms
 
@@ -94,6 +103,7 @@ class SecondaryView(ctk.CTkToplevel):
 
     def clear_data(self):
         """Clear the text entry field."""
+        self.controller.clear_data()  # This will call the controller's clear_data method
         self.entry.delete(0, ctk.END)
 
     def close_window(self):

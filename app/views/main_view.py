@@ -1,12 +1,4 @@
 # MainView.py
-import sys
-import customtkinter as ctk
-from PIL import Image
-
-import customtkinter as ctk
-from PIL import Image
-import sys
-
 import customtkinter as ctk
 from PIL import Image
 import sys
@@ -16,6 +8,7 @@ class MainView(ctk.CTk):
 
     def __init__(self, controller):
         super().__init__()
+        self.logo_image = None
         self.controller = controller
         self.title("Data Entry Application")
 
@@ -90,6 +83,19 @@ class MainView(ctk.CTk):
         # Set the close event to terminate the program
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
+    def update_display(self, message):
+        """Update the message display in the view."""
+        self.message_label.configure(text=message)
+
+    def update_logo(self):
+        """Adjust the logo size based on window size."""
+        window_width = self.winfo_width()
+        logo_size = int(window_width * 0.25)  # 25% of the window width
+        self.logo_image = ctk.CTkImage(Image.open("assets/logo.png"), size=(logo_size, logo_size))
+        self.logo_label.configure(image=self.logo_image)
+        self.logo_label.image = self.logo_image  # Keep reference to avoid garbage collection
+        self.after(100, self.update_logo)  # Update the logo size every 100ms
+
     def save_data(self):
         """Handle save button click."""
         text = self.entry.get()
@@ -100,20 +106,7 @@ class MainView(ctk.CTk):
         self.controller.clear_data()
         self.entry.delete(0, ctk.END)
 
-    def update_display(self, message):
-        """Update the message display in the view."""
-        self.message_label.configure(text=message)
-
     def on_close(self):
         """Terminate the program when the main window is closed."""
         self.destroy()
         sys.exit()
-
-    def update_logo(self):
-        """Adjust the logo size based on window size."""
-        window_width = self.winfo_width()
-        logo_size = int(window_width * 0.25)  # 25% of the window width
-        self.logo_image = ctk.CTkImage(Image.open("assets/logo.png"), size=(logo_size, logo_size))
-        self.logo_label.configure(image=self.logo_image)
-        self.logo_label.image = self.logo_image  # Keep reference to avoid garbage collection
-        self.after(100, self.update_logo)  # Update the logo size every 100ms

@@ -11,3 +11,8 @@ class SecondaryController:
         success = self.repository.save_data(text)
         message = "Data saved successfully!" if success else "Failed to save data."
         self.view.update_display(message)  # Update the view with the result
+
+    def clear_data(self):
+        """Clear the data using the repository and update the view."""
+        self.repository.clear_data()
+        self.view.update_display("Data cleared secondary view.")

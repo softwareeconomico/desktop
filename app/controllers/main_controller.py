@@ -16,12 +16,12 @@ class MainController:
     def clear_data(self):
         """Clear the data using the repository and update the view."""
         self.repository.clear_data()
-        self.main_view.update_display("Data cleared.")
+        self.main_view.update_display("Data cleared main view.")
 
     def open_secondary_window(self):
         """Open the secondary window."""
         # Using the shared repository passed to the MainController
-        secondary_view = SecondaryView(parent=self.main_view)
+        secondary_view = SecondaryView(parent=self.main_view, controller=None)
         secondary_controller = SecondaryController(secondary_view, self.repository)
 
         # Set the controller for the secondary view
